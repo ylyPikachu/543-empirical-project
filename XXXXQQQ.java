@@ -1,5 +1,3 @@
-package graphCode;
-
 import java.util.Iterator;
 
 public class XXXXQQQ {
@@ -7,7 +5,7 @@ public class XXXXQQQ {
 	public static void main(String[] args) {
 		GraphInput GG = new GraphInput();
 		SimpleGraph G = new SimpleGraph();
-		GG.LoadSimpleGraph(G, "/Users/yangliying/Downloads/543group2/graph1.txt");
+		GG.LoadSimpleGraph(G, "/Users/agampanesar/Downloads/L75R125v1.txt");
 		System.out.println(GG);
 		Vertex source=null;
 		Vertex sink=null;
@@ -23,18 +21,25 @@ public class XXXXQQQ {
 		}
 		long startTime = System.nanoTime();
 		FordFulkerson ff= new FordFulkerson(G,source,sink);
+		System.out.println("Max Flow by FordFulkerson:"+ff.getMaxFlow());
 		long endTime = System.nanoTime();
 		long duration = (endTime - startTime) / 1000000;
 		System.out.println("Duration for FordFulkerson: " + duration + " millisecond");
-		System.out.println("FordFulkerson:"+ff.getMaxFlow());
 
 		startTime = System.nanoTime();
 		ScalingFordFulkerson sff= new ScalingFordFulkerson(G,source,sink);
+		System.out.println("Max Flow by ScalingFordFulkerson:"+sff.getMaxFlow());
 		endTime = System.nanoTime();
 		duration = (endTime - startTime) / 1000000;
-
 		System.out.println("Duration for ScalingFordFulkerson: " + duration + " millisecond");
-		System.out.println("ScalingFordFulkerson:"+sff.getMaxFlow());
+
+		startTime = System.nanoTime();
+		PreFlowPush preFlowPush = new PreFlowPush(G);
+		System.out.println("Max Flow by PreFlowPushAlgorithm:" + preFlowPush.getMaxFlow());
+		endTime = System.nanoTime();
+		duration = (endTime - startTime) / 1000000;
+		System.out.println("Duration for PreFlowPushAlgorithm: " + duration + " millisecond");
+
 	}
 
 }

@@ -108,7 +108,7 @@ public class RandomGraph {
    * @param outString The StringBuffer containing the data being saved
    * @param filename  The complete file path including file name
    */
-  private static void toFile(StringBuffer outString, String filename) {
+  public static void toFile(StringBuffer outString, String filename) {
     try {
       BufferedWriter fout = new BufferedWriter(new
               FileWriter(filename));

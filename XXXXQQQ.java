@@ -5,7 +5,7 @@ public class XXXXQQQ {
 	public static void main(String[] args) {
 		GraphInput GG = new GraphInput();
 		SimpleGraph G = new SimpleGraph();
-		StringBuffer stringBuffer = RandomGraph.graphBuilder(200, 60, 1, 5);
+		StringBuffer stringBuffer = RandomGraph.graphBuilder(200, 60, 1, 10);
 		RandomGraph.toFile(stringBuffer, "/Users/agampanesar/Downloads/L75R125v1.txt");
 		GG.LoadSimpleGraph(G, "/Users/agampanesar/Downloads/L75R125v1.txt");
 		System.out.println(GG);

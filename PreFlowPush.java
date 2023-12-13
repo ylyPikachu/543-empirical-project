@@ -70,7 +70,7 @@ public class PreFlowPush {
     private void updateReverseEdgeFlow(Edge edge, double fl, SimpleGraph graph) {
         Vertex v = edge.getFirstEndpoint();
         Vertex u = edge.getSecondEndpoint();
-        Iterator it = graph.edges();
+        Iterator it = u.incidentEdgeList.iterator();
         while (it.hasNext()) {
             if (!(fl > 0)) {
                 return;
@@ -101,7 +101,8 @@ public class PreFlowPush {
     }
 
     private boolean push(Vertex u, SimpleGraph graph) {
-        Iterator it = graph.edges();
+        LinkedList edgeList = u.incidentEdgeList;
+        Iterator it = edgeList.iterator();
         while (it.hasNext()) {
             Edge edge = (Edge)it.next();
             if (edge.getFirstEndpoint() == u) {
@@ -144,7 +145,7 @@ public class PreFlowPush {
     }
 
     private void relabel(Vertex u, SimpleGraph graph) {
-        Iterator it = graph.edges();
+        Iterator it = u.incidentEdgeList.iterator();
         int minHeight = Integer.MAX_VALUE;
         while(it.hasNext()) {
             Edge edge = (Edge) it.next();

@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Queue;
 
 public class PreFlowPush {
     private SimpleGraph graph;
@@ -9,6 +10,10 @@ public class PreFlowPush {
 
     private HashMap<Vertex, Double>excessFlow;
     private HashMap<Edge, Boolean> isBackward;
+
+    private Queue<Vertex> overFlowVertex;
+
+    private HashMap<Vertex, Boolean> markVertex;
     private int numVertices;
 
     PreFlowPush(SimpleGraph graph) {
@@ -17,6 +22,8 @@ public class PreFlowPush {
         excessFlow = new HashMap<>();
         isBackward = new HashMap<>();
         numVertices = graph.numVertices();
+        overFlowVertex = new LinkedList<>();
+        markVertex = new HashMap<>();
         this.graph = graph;
     }
     private void preflow(SimpleGraph graph) {
@@ -35,6 +42,8 @@ public class PreFlowPush {
             if (edge.getFirstEndpoint().getName().equals("s")) {
                 flow.put(edge,(Double) edge.getData());
                 excessFlow.put(edge.getSecondEndpoint(), (Double) edge.getData());
+                overFlowVertex.add(edge.getSecondEndpoint());
+                markVertex.put(edge.getSecondEndpoint(), true);
                 Edge newEdge = graph.insertEdge(edge.getSecondEndpoint(), edge.getFirstEndpoint(),0.0, "reverse" + edge.getName());
                 isBackward.put(newEdge, true);
                 flow.put(newEdge, (Double) edge.getData());
@@ -103,6 +112,10 @@ public class PreFlowPush {
                     if (isBackward.containsKey(edge) && isBackward.get(edge)) {
                         //backward edge
                         double fl = Math.min(flow.get(edge), excessFlow.get(u));
+                        if(!edge.getSecondEndpoint().getName().equals("s") && !edge.getSecondEndpoint().getName().equals("t") && (!markVertex.containsKey(edge.getSecondEndpoint()) || !markVertex.get(edge.getSecondEndpoint())) ) {
+                            overFlowVertex.add(edge.getSecondEndpoint());
+                            markVertex.put(edge.getSecondEndpoint(), true);
+                        }
                         excessFlow.put(u, excessFlow.get(u) - fl);
                         excessFlow.put(edge.getSecondEndpoint(), excessFlow.get(edge.getSecondEndpoint()) + fl);
                         flow.put(edge, flow.get(edge) - fl);
@@ -110,10 +123,18 @@ public class PreFlowPush {
                     } else {
                         //forward edge
                         double fl = Math.min((Double) edge.getData() - flow.get(edge), excessFlow.get(u));
+                        if(!edge.getSecondEndpoint().getName().equals("s") && !edge.getSecondEndpoint().getName().equals("t") && (!markVertex.containsKey(edge.getSecondEndpoint()) || !markVertex.get(edge.getSecondEndpoint())) ) {
+                            overFlowVertex.add(edge.getSecondEndpoint());
+                            markVertex.put(edge.getSecondEndpoint(), true);
+                        }
                         excessFlow.put(u, excessFlow.get(u) - fl);
                         excessFlow.put(edge.getSecondEndpoint(), excessFlow.get(edge.getSecondEndpoint()) + fl);
                         flow.put(edge, flow.get(edge) + fl);
                         updateReverseEdgeFlow(edge, fl, graph);
+                    }
+                    if(excessFlow.get(u) > 0) {
+                        markVertex.put(u, true);
+                        overFlowVertex.add(u);
                     }
                     return true;
                 }
@@ -134,18 +155,19 @@ public class PreFlowPush {
                 if(height.get((String) edge.getSecondEndpoint().getName()) >= height.get((String) u.getName())) {
                     minHeight = Math.min(minHeight, height.get((String) edge.getSecondEndpoint().getName()));
 //                    mh = height.get((String) edge.getSecondEndpoint().getName());
-
                 }
             }
         }
         height.put((String)u.getName(), minHeight + 1);
+        markVertex.put(u, true);
+        overFlowVertex.add(u);
     }
 
     public double getMaxFlow() {
         preflow(graph);
-        while (overFlowVertex(graph) != null)
-        {
-            Vertex u = overFlowVertex(graph);
+        while (!overFlowVertex.isEmpty()) {
+            Vertex u = overFlowVertex.poll();
+            markVertex.put(u, false);
             if (!push(u, graph))
                 relabel(u, graph);
         }

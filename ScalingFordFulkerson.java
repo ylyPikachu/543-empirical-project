@@ -36,8 +36,14 @@ public class ScalingFordFulkerson {
     }
 
     public double getMaxFlow() {
-        double scalingFactor = computeScalingFactor();
-        while (scalingFactor > 0) {
+        double scalingFactor = 1;
+        double maxCapacity = Integer.MIN_VALUE;
+        for (Object e : graph.edgeList) {
+            Edge edge = (Edge) e;
+            maxCapacity = Math.max(maxCapacity, (Double) edge.getData());
+        }
+
+        while (scalingFactor <= maxCapacity) {
             while (bfs(scalingFactor)) {
                 double pathFlow = Double.MAX_VALUE;
                 for (Vertex v = sink; v != source; v = parent.get(v)) {
@@ -60,22 +66,9 @@ public class ScalingFordFulkerson {
 
                 maxFlow += pathFlow;
             }
-            scalingFactor /= 2;
-        }
-        return maxFlow;
-    }
-
-    private double computeScalingFactor() {
-        double maxCapacity = 0;
-        for (Object e : graph.edgeList) {
-            Edge edge = (Edge) e;
-            maxCapacity = Math.max(maxCapacity, (double) edge.getData());
-        }
-        double scalingFactor = 1;
-        while (scalingFactor * 2 <= maxCapacity) {
             scalingFactor *= 2;
         }
-        return scalingFactor;
+        return maxFlow;
     }
 
     private boolean bfs(double scalingFactor) {
